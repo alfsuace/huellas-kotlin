@@ -3,6 +3,7 @@ package com.iesam.huellaskotlintrainning.domain
 import com.iesam.huellaskotlintrainning.app.Either
 import com.iesam.huellaskotlintrainning.app.right
 import com.iesam.huellaskotlintrainning.domain.errors.ErrorApp
+import java.util.Collections.emptyList
 
 class GetFeedCatsUseCase(private val repository: CatRepository) {
 

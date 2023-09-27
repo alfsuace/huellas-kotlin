@@ -7,6 +7,7 @@ import java.io.File
 import java.io.FileNotFoundException
 import java.io.FileWriter
 import java.io.IOException
+import java.sql.DriverManager.println
 import java.util.*
 
 class CatFileLocalDataSource private constructor() {
@@ -37,8 +38,8 @@ class CatFileLocalDataSource private constructor() {
     }
 
     fun findById(catId: Int): Cat? {
-        val cats: List<Cat> = findAll()
-        return cats.find { it.id == catId }
+        return findAll().find { it.id == catId }
+
     }
 
     fun findAll(): MutableList<Cat> {
@@ -76,13 +77,6 @@ class CatFileLocalDataSource private constructor() {
     }
 
     companion object {
-        var instance: CatFileLocalDataSource? = null
-            get() {
-                if (field == null) {
-                    field = CatFileLocalDataSource()
-                }
-                return field
-            }
-            private set
+        var instance: CatFileLocalDataSource  = CatFileLocalDataSource()
     }
 }

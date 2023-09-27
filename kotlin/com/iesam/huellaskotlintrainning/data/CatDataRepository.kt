@@ -1,6 +1,7 @@
 package com.iesam.huellaskotlintrainning.data
 
 import com.iesam.huellaskotlintrainning.app.Either
+import com.iesam.huellaskotlintrainning.app.right
 import com.iesam.huellaskotlintrainning.data.local.CatFileLocalDataSource
 import com.iesam.huellaskotlintrainning.data.remote.CatApiRemoteDataSource
 import com.iesam.huellaskotlintrainning.domain.Cat
@@ -19,8 +20,14 @@ class CatDataRepository(
      - Si da error, devolvemos el error.
      */
     fun getAllOk(): Either<ErrorApp, List<Cat>> {
-        //Cambiar esto
-        return apiSource.getCats()
+
+        if (localSource.findAll().isNotEmpty()) {
+            return Either.Right(localSource.findAll())
+        } else if (apiSource.getCats().isRight()) {
+            return apiSource.getCats()
+        } else {
+            return Either.Left(ErrorApp.InternetErrorApp)
+        }
     }
 
     /*
@@ -30,9 +37,17 @@ class CatDataRepository(
      - Se obtiene de red con la respuesta de errores.
      - Nos devuelve un error, devolvemos lo de local
      */
+
     fun getAllError(): Either<ErrorApp, List<Cat>> {
-        //Cambiar esto
-        return apiSource.getCats()
+        val apiResult = apiSource.getCats()
+
+        if (apiResult.isRight()) {
+            localSource.saveList(apiResult.get())
+            return Either.Right(apiResult.get())
+        } else {
+            localSource.findAll()
+            return Either.Left(ErrorApp.InternetErrorApp)
+        }
     }
 
     /*
@@ -41,7 +56,10 @@ class CatDataRepository(
      - Se devuelve al dominio
      */
     fun getAllError2(): Either<ErrorApp, List<Cat>> {
-        //Cambiar esto
-        return apiSource.getCats()
+        val resultRemote = apiSource.getCatsWithError()
+        return resultRemote.mapLeft {
+            it
+        }
     }
+
 }
